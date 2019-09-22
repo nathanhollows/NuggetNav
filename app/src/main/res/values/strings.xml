@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Nugget Nav</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_compass">Compass</string>
+    <string name="title_map">Map</string>
+    <string name="mapbox_access_token"></string>
+    <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
+    <string name="title">NuggetNav</string>
+    <string name="ok">Ok</string>
+    <string name="title_location_permission"/>
+</resources>
