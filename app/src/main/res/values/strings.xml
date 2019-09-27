@@ -9,5 +9,14 @@
     <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
     <string name="title">NuggetNav</string>
     <string name="ok">Ok</string>
-    <string name="title_location_permission"/>
+    <string name="title_location_permission" />
+    <string name="fetching_locations">Updating locations</string>
+    <string name="locating">Locating nuggets...</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_stores">Stores</string>
+    <string name="tab_chains">Chains</string>
+    <string name="stores_fragment">Stores Fargment</string>
+    <string name="chains_fragment">Chains Fragment</string>
 </resources>

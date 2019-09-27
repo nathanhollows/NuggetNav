@@ -2,7 +2,9 @@ package com.nuggetwatch.nuggetnav;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -12,9 +14,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.mapbox.geojson.Feature;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationComponent;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
@@ -28,22 +36,18 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.division;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.exponential;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.interpolate;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.lt;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.rgb;
-import static com.mapbox.mapboxsdk.style.expressions.Expression.stop;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconColor;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
@@ -56,8 +60,9 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 /**
  * The most basic example of adding a map to an activity.
  */
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
+    private static final String TAG = "Eh?";
     private MapView mapView;
     private MapboxMap mapboxMap;
 
@@ -91,38 +96,14 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
-
         Menu menu = navView.getMenu();
         MenuItem menuItem = menu.getItem(1);
         menuItem.setChecked(true);
-
         navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         mapView = findViewById(R.id.mapView);
-
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull MapboxMap map) {
-
-                mapboxMap = map;
-
-                mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/nathanhollows/ck03c12ce0ymt1cpgsg8vv5rw"), new Style.OnStyleLoaded() {
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        addClusteredGeoJsonSource(style);
-                        style.addImage(
-                                "cross-icon-id",
-                                BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.mapbox_compass_icon)),
-                                true
-                        );
-
-                        Toast.makeText(MapActivity.this, R.string.zoom_map_in_and_out_instruction,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
+        mapView.getMapAsync(this);
     }
 
     // Add the mapView lifecycle to the activity's lifecycle methods
@@ -170,7 +151,7 @@ public class MapActivity extends AppCompatActivity {
 
     private void addClusteredGeoJsonSource(@NonNull Style loadedMapStyle) {
 
-// Add a new source from the GeoJSON data and set the 'cluster' option to true.
+        // Add a new source from the GeoJSON data and set the 'cluster' option to true.
         try {
             loadedMapStyle.addSource(
                     new GeoJsonSource("locations",
@@ -189,26 +170,16 @@ public class MapActivity extends AppCompatActivity {
         // Each point range gets a different fill color.
         int[][] layers = new int[][] {
                 new int[] {1, ContextCompat.getColor(this, R.color.colorAccent)},
-                new int[] {0, ContextCompat.getColor(this, R.color.colorPrimary)}
+                new int[] {0, ContextCompat.getColor(this, R.color.colorAccent)}
         };
 
         //Creating a marker layer for single data points
         SymbolLayer unclustered = new SymbolLayer("unclustered-points", "locations");
 
         unclustered.setProperties(
-                iconImage("cross-icon-id"),
-                iconSize(
-                        division(
-                                get("mag"), literal(4.0f)
-                        )
-                ),
-                iconColor(
-                        interpolate(exponential(1), get("mag"),
-                                stop(2.0, rgb(0, 255, 0)),
-                                stop(4.5, rgb(0, 0, 255)),
-                                stop(7.0, rgb(255, 0, 0))
-                        )
-                )
+                iconImage("marker"),
+                iconAllowOverlap(true),
+                iconSize(0.9f)
         );
         loadedMapStyle.addLayer(unclustered);
 
@@ -217,7 +188,7 @@ public class MapActivity extends AppCompatActivity {
             CircleLayer circles = new CircleLayer("cluster-" + i, "locations");
             circles.setProperties(
                     circleColor(layers[i][1]),
-                    circleRadius(18f)
+                    circleRadius(20f)
             );
 
             Expression pointCount = toNumber(get("point_count"));
@@ -247,4 +218,80 @@ public class MapActivity extends AppCompatActivity {
         loadedMapStyle.addLayer(count);
 
     }
+
+    @SuppressWarnings( {"MissingPermission"})
+    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
+
+        // Get an instance of the component
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+
+        // Activate with options
+        locationComponent.activateLocationComponent(
+                LocationComponentActivationOptions.builder(this, loadedMapStyle).build());
+
+        // Enable to make component visible
+        locationComponent.setLocationComponentEnabled(true);
+
+        // Set the component's camera mode
+        locationComponent.setCameraMode(CameraMode.TRACKING);
+
+        // Set the component's render mode
+        locationComponent.setRenderMode(RenderMode.NORMAL);
+    }
+
+    @Override
+    public boolean onMapClick(@NonNull LatLng point) {
+
+        // Convert LatLng coordinates to screen pixel and only query the rendered features.
+        final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
+
+        List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, "unclustered-points");
+
+        // Get the first feature within the list if one exist
+        if (features.size() > 0) {
+            Feature feature = features.get(0);
+
+            // Ensure the feature has properties defined
+            if (feature.properties() != null) {
+
+                double zoom = mapboxMap.getCameraPosition().zoom + (17 - mapboxMap.getCameraPosition().zoom)/4;
+                double difference = (mapboxMap.getCameraPosition().zoom + (17 - mapboxMap.getCameraPosition().zoom)/4) - mapboxMap.getCameraPosition().zoom;
+
+                CameraPosition position = new CameraPosition.Builder()
+                        .target(new LatLng(point.getLatitude(), point.getLongitude())) // Sets the new camera position
+                        .zoom(zoom) // Sets the zoom
+                        .build(); // Creates a CameraPosition from the builder
+
+                mapboxMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(position), (int) (500 + 200 * difference));
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onMapReady(@NonNull MapboxMap map) {
+
+        mapboxMap = map;
+
+        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/nathanhollows/ck03c12ce0ymt1cpgsg8vv5rw"), new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                addClusteredGeoJsonSource(style);
+                style.addImage(
+                        "marker",
+                        BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker))
+                );
+
+                Toast.makeText(MapActivity.this, R.string.fetching_locations,
+                        Toast.LENGTH_SHORT).show();
+
+                enableLocationComponent(style);
+            }
+        });
+
+        mapboxMap.addOnMapClickListener(MapActivity.this);
+    }
+
 }
