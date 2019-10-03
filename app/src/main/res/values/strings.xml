@@ -8,15 +8,14 @@
     <string name="mapbox_access_token"></string>
     <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
     <string name="title">NuggetNav</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="title_location_permission" />
     <string name="fetching_locations">Updating locations</string>
-    <string name="locating">Locating nuggets...</string>
+    <string name="locating">Locating nuggets…</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tab_stores">Stores</string>
-    <string name="tab_chains">Chains</string>
-    <string name="stores_fragment">Stores Fargment</string>
-    <string name="chains_fragment">Chains Fragment</string>
+    <string name="tab_stores">Nearby Stores</string>
+    <string name="query_feature_marker_title">Title</string>
+    <string name="tab_review">My Reviews</string>
+
+    <string name="stars">%1$s / 5</string>
 </resources>

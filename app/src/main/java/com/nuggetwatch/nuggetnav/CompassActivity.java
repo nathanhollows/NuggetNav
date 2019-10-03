@@ -74,28 +74,9 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private CompassView compassView;
     private boolean found = false;
 
+    private boolean fixed = false;
+
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_compass:
-                    return true;
-                case R.id.navigation_home:
-                    Intent intentCompass = new Intent(CompassActivity.this, MainActivity.class);
-                    startActivity(intentCompass);
-                    return true;
-                case R.id.navigation_map:
-                    Intent intentMap = new Intent(CompassActivity.this, MapActivity.class);
-                    startActivity(intentMap);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,8 +97,38 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        if (getIntent().hasExtra("latitude")) {
+            nugget.setLatitude(Double.valueOf(getIntent().getStringExtra("latitude")));
+            nugget.setLongitude(Double.valueOf(getIntent().getStringExtra("longitude")));
+            fixed = true;
+            found = true;
+        }
+
         onPermissionGranted();
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_compass:
+                    return true;
+                case R.id.navigation_home:
+                    Intent intentHome = new Intent(CompassActivity.this, MainActivity.class);
+                    intentHome.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intentHome);
+                    return true;
+                case R.id.navigation_map:
+                    Intent intentMap = new Intent(CompassActivity.this, MapActivity.class);
+                    intentMap.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intentMap);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onStart() {
@@ -188,35 +199,37 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                 (float) currentLocation.getAltitude(),
                 System.currentTimeMillis());
 
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
+        if (!fixed) {
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
 
-        Retrofit retrofitInstance = new Retrofit
-                .Builder()
-                .baseUrl("https://nuggetwatch.co.nz/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
+            Retrofit retrofitInstance = new Retrofit
+                    .Builder()
+                    .baseUrl("https://nuggetwatch.co.nz/")
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
 
-        API apiService = retrofitInstance.create(API.class);
+            API apiService = retrofitInstance.create(API.class);
 
-        Call<NearestModel> apiCall = apiService.nearest(
-                Double.toString(currentLocation.getLatitude()),
-                Double.toString(currentLocation.getLongitude()));
+            Call<NearestModel> apiCall = apiService.nearest(
+                    Double.toString(currentLocation.getLatitude()),
+                    Double.toString(currentLocation.getLongitude()));
 
-        apiCall.enqueue(new Callback<NearestModel>() {
-            @Override
-            public void onResponse(Call<NearestModel> call, Response<NearestModel> response) {
-                nugget.setLatitude(response.body().getLat());
-                nugget.setLongitude(response.body().getLng());
-                found = true;
-            }
+            apiCall.enqueue(new Callback<NearestModel>() {
+                @Override
+                public void onResponse(Call<NearestModel> call, Response<NearestModel> response) {
+                    nugget.setLatitude(response.body().getLat());
+                    nugget.setLongitude(response.body().getLng());
+                    found = true;
+                }
 
-            @Override
-            public void onFailure(Call<NearestModel> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Could not fetch nugget locations", Toast.LENGTH_LONG);
-            }
-        });
+                @Override
+                public void onFailure(Call<NearestModel> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "Could not fetch nugget locations", Toast.LENGTH_LONG);
+                }
+            });
+        }
 
         updateLocation(location);
 

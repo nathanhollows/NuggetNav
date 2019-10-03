@@ -15,4 +15,9 @@ public interface API {
             @Path("lat") String lat,
             @Path("lng") String lng
     );
+
+    @GET("/api/prices/chain/{nicename}")
+    Call<List<PriceModel>> prices(
+            @Path("nicename") String nicename
+    );
 }
