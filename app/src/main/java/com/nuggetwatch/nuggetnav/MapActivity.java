@@ -1,15 +1,11 @@
 package com.nuggetwatch.nuggetnav;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,9 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mapbox.geojson.Feature;
-import com.mapbox.geojson.Geometry;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -41,19 +35,15 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.style.expressions.Expression;
 import com.mapbox.mapboxsdk.style.layers.CircleLayer;
-import com.mapbox.mapboxsdk.style.layers.Layer;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Formatter;
 import java.util.List;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
@@ -66,6 +56,7 @@ import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleTranslate;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
@@ -77,6 +68,7 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textTranslate;
 
 
 /**
@@ -258,7 +250,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             Expression pointCount = toNumber(get("point_count"));
 
-// Add a filter to the cluster layer that hides the circles based on "point_count"
+            // Add a filter to the cluster layer that hides the circles based on "point_count"
             circles.setFilter(
                     i == 0
                             ? all(has("point_count"),
@@ -271,7 +263,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             loadedMapStyle.addLayer(circles);
         }
 
-//Add the count labels
+        //Add the count labels
         SymbolLayer count = new SymbolLayer("count", "locations");
         count.setProperties(
                 textField(Expression.toString(get("point_count"))),
@@ -397,7 +389,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     float distanceTo = -1f;
                     String unit = "km";
 
-                    if (mapboxMap.getLocationComponent().isLocationComponentActivated()) {
+                    if (mapboxMap.getLocationComponent().getLastKnownLocation() != null) {
                         Location nuggetLoc = new Location("");
                         nuggetLoc.setLatitude(marker.latitude());
                         nuggetLoc.setLongitude(marker.longitude());
@@ -412,15 +404,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             unit = "m";
                             distanceTo = Math.round(distanceTo * 1000);
                         }
+
+                        TextView distance = findViewById(R.id.distance);
+                        distance.setText(formatter.format(distanceTo) + unit + " away");
                     }
 
                     ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",0f);
                     animation.setDuration(300);
                     animation.start();
-
-                    TextView distance = findViewById(R.id.distance);
-                    distance.setText(formatter.format(distanceTo) + unit + " away");
-
 
                     String stars = "";
                     for (int i = 0; i < feature.properties().get("rating").getAsInt(); i++) {

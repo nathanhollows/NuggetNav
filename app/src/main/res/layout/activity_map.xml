@@ -9,6 +9,7 @@ tools:context=".CompassActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
+
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"

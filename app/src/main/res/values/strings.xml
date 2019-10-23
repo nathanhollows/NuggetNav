@@ -5,7 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_compass">Compass</string>
     <string name="title_map">Map</string>
-    <string name="mapbox_access_token"></string>
+    <string name="mapbox_access_token">pk.eyJ1IjoibmF0aGFuaG9sbG93cyIsImEiOiJjazAzYmpkMnkwdms1M2hwNDBkYjZ4ZXQ2In0.px62TtNqxCEoU_x1oVTr3Q</string>
     <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
     <string name="title">NuggetNav</string>
     <string name="ok">OK</string>

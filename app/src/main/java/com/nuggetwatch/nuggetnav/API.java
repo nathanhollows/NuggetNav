@@ -20,4 +20,9 @@ public interface API {
     Call<List<PriceModel>> prices(
             @Path("nicename") String nicename
     );
+
+    @GET("/api/reviews/chain/{nicename}")
+    Call<List<ReviewModel>> reviews(
+            @Path("nicename") String nicename
+    );
 }
