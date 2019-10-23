@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
@@ -27,19 +28,21 @@
         <TextView
             android:id="@+id/flavour"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:text="@string/flavour" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/flavourBar"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="4"
-            android:scaleX="0.4"
-            android:scaleY="0.4"
-            android:stepSize="1"/>
+            android:scaleX="1"
+            android:scaleY="1"
+            android:stepSize="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -50,18 +53,20 @@
         <TextView
             android:id="@+id/mouthfeel"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/mouthfeel" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/mouthfeelBar"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="4"
-            android:scaleX="0.4"
-            android:scaleY="0.4"
+            android:scaleX="1"
+            android:scaleY="1"
             android:stepSize="1"/>
     </LinearLayout>
 
@@ -73,18 +78,20 @@
         <TextView
             android:id="@+id/coating"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/coating" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/coatingBar"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="4"
-            android:scaleX="0.4"
-            android:scaleY="0.4"
+            android:scaleX="1"
+            android:scaleY="1"
             android:stepSize="1"/>
     </LinearLayout>
 
@@ -96,18 +103,20 @@
         <TextView
             android:id="@+id/sauces"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="@string/sauces" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/saucesBar"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="4"
-            android:scaleX="0.4"
-            android:scaleY="0.4"
+            android:scaleX="1"
+            android:scaleY="1"
             android:stepSize="1"/>
 
     </LinearLayout>
@@ -121,18 +130,19 @@
             android:id="@+id/overall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="@string/overall" />
 
         <RatingBar
-            android:id="@+id/ratingBar"
+            android:id="@+id/overallBar"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:isIndicator="true"
             android:numStars="5"
             android:rating="4"
-            android:scaleX="0.4"
-            android:scaleY="0.4"
+            android:scaleX="1"
+            android:scaleY="1"
             android:stepSize="1"/>
     </LinearLayout>
 

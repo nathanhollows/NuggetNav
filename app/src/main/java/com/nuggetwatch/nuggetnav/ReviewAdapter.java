@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,11 +36,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         ReviewModel review = mData.get(position);
         holder.name.setText(review.getName());
         holder.comments.setText(review.getComments());
-        holder.flavour.setText(String.valueOf(review.getFlavour()));
-        holder.mouthfeel.setText(String.valueOf(review.getMouthfeel()));
-        holder.coating.setText(String.valueOf(review.getCoating()));
-        holder.sauces.setText(String.valueOf(review.getSauces()));
-        holder.overall.setText(String.valueOf(review.getOverall()));
+        holder.flavour.setRating(review.getFlavour());
+        holder.mouthfeel.setRating(review.getMouthfeel());
+        holder.coating.setRating(review.getCoating());
+        holder.sauces.setRating(review.getSauces());
+        holder.overall.setRating(review.getOverall());
     }
 
     // total number of rows
@@ -53,22 +54,22 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
         TextView comments;
-        TextView flavour;
-        TextView mouthfeel;
-        TextView coating;
-        TextView sauces;
-        TextView overall;
+        RatingBar flavour;
+        RatingBar mouthfeel;
+        RatingBar coating;
+        RatingBar sauces;
+        RatingBar overall;
 
 
         ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
             comments = itemView.findViewById(R.id.comments);
-            flavour = itemView.findViewById(R.id.flavour);
-            mouthfeel = itemView.findViewById(R.id.mouthfeel);
-            coating = itemView.findViewById(R.id.coating);
-            sauces = itemView.findViewById(R.id.sauces);
-            overall = itemView.findViewById(R.id.overall);
+            flavour = itemView.findViewById(R.id.flavourBar);
+            mouthfeel = itemView.findViewById(R.id.mouthfeelBar);
+            coating = itemView.findViewById(R.id.coatingBar);
+            sauces = itemView.findViewById(R.id.saucesBar);
+            overall = itemView.findViewById(R.id.overallBar);
             itemView.setOnClickListener(this);
         }
 

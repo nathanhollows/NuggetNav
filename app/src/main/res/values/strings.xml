@@ -5,7 +5,7 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_compass">Compass</string>
     <string name="title_map">Map</string>
-    <string name="mapbox_access_token">pk.eyJ1IjoibmF0aGFuaG9sbG93cyIsImEiOiJjazAzYmpkMnkwdms1M2hwNDBkYjZ4ZXQ2In0.px62TtNqxCEoU_x1oVTr3Q</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoibmF0aGFuaG9sbG93cyIsImEiOiJjazIzMzRuNHAwMGVnM2lxaGEwbTNwNGQyIn0.vsjlOi_SpKog-zkBxKW0HQ</string>
     <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
     <string name="title">NuggetNav</string>
     <string name="ok">OK</string>
@@ -18,4 +18,10 @@
     <string name="tab_review">My Reviews</string>
 
     <string name="stars">%1$s / 5</string>
+
+    <string name="flavour">Flavour</string>
+    <string name="mouthfeel">Mouthfeel</string>
+    <string name="coating">Coating</string>
+    <string name="sauces">Sauces</string>
+    <string name="overall">Overall</string>
 </resources>
