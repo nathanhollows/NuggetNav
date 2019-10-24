@@ -41,7 +41,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:paddingTop="40dp"
+                    android:paddingTop="30dp"
                     android:paddingBottom="10dp"
                     android:text="TextView"
                     android:textColor="@android:color/white"
@@ -50,21 +50,33 @@
 
                 <RatingBar
                     android:id="@+id/rating_overall"
+                    style="@style/Widget.AppCompat.RatingBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:isIndicator="true"
                     android:numStars="5"
+                    android:paddingBottom="10dp"
                     android:rating="4"
                     android:scaleX="0.7"
                     android:scaleY="0.7"
                     android:stepSize="1" />
             </LinearLayout>
 
-            <TableRow
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="8dp">
+                android:paddingTop="75dp"
+                android:visibility="visible"/>
+
+            <TableRow
+                android:id="@+id/tableRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -101,12 +113,12 @@
                 android:id="@+id/priceRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/reviewRecycler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

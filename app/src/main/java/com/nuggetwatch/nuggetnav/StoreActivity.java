@@ -6,7 +6,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
     private JSONObject json = null;
     private PriceAdapter priceAdapter;
     private ReviewAdapter reviewAdapter;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
         setContentView(R.layout.activity_store);
 
         TextView name = findViewById(R.id.name);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -146,6 +150,12 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                         layoutManager.getOrientation());
                 recyclerView.addItemDecoration(dividerItemDecoration);
+
+                if (response.body().size() > 0) {
+                    TableRow tableRow = findViewById(R.id.tableRow);
+                    tableRow.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -191,6 +201,8 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
                         layoutManager.getOrientation());
                 recyclerView.addItemDecoration(dividerItemDecoration);
+
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
