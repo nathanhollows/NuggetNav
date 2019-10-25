@@ -238,7 +238,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 iconAllowOverlap(true),
                 iconSize(0.9f)
         );
-        
         loadedMapStyle.addLayer(unclustered);
 
         for (int i = 0; i < layers.length; i++) {
