@@ -349,7 +349,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if (feature.properties().has("cluster_id")) {
 
                     int zoom = source.getClusterExpansionZoom(feature);
-                    zoom *= 1.1;
 
                     double difference = (mapboxMap.getCameraPosition().zoom + (17 - mapboxMap.getCameraPosition().zoom) / 4) - mapboxMap.getCameraPosition().zoom;
                     CameraPosition position = new CameraPosition.Builder()
@@ -357,7 +356,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     marker.latitude(),
                                     marker.longitude()
                             )) // Sets the new camera position
-                            .zoom(zoom) // Sets the zoom
+                            .zoom(zoom + 0.1) // Sets the zoom
                             .build(); // Creates a CameraPosition from the builder
 
                     mapboxMap.animateCamera(CameraUpdateFactory
