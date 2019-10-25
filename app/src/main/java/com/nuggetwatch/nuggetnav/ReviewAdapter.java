@@ -35,6 +35,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         ReviewModel review = mData.get(position);
         holder.name.setText(review.getName());
+        holder.date.setText(review.getDate());
         holder.comments.setText(review.getComments());
         holder.flavour.setRating(review.getFlavour());
         holder.mouthfeel.setRating(review.getMouthfeel());
@@ -53,6 +54,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
+        TextView date;
         TextView comments;
         RatingBar flavour;
         RatingBar mouthfeel;
@@ -64,6 +66,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.name);
+            date = itemView.findViewById(R.id.date);
             comments = itemView.findViewById(R.id.comments);
             flavour = itemView.findViewById(R.id.flavourBar);
             mouthfeel = itemView.findViewById(R.id.mouthfeelBar);
