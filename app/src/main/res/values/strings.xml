@@ -9,7 +9,8 @@
     <string name="zoom_map_in_and_out_instruction">Zoom in and out</string>
     <string name="title">NuggetNav</string>
     <string name="ok">OK</string>
-    <string name="title_location_permission" />
+    <string name="title_location_permission">Location Permissions</string>
+    <string name="message_location_permission">Nugget Watch uses your location to find nearby nuggets</string>
     <string name="fetching_locations">Updating locations</string>
     <string name="locating">Locating nuggets…</string>
 
