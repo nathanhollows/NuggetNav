@@ -111,7 +111,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         LinearLayout popup = findViewById(R.id.popup);
 
-        ObjectAnimator animation = ObjectAnimator.ofFloat(popup, "translationY",600f);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(popup, "translationY",675f);
         animation.setDuration(0);
         animation.start();
 
@@ -463,7 +463,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
         } else {
-            ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",600f);
+            ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",675);
             animation.setDuration(300);
             animation.start();
         }
