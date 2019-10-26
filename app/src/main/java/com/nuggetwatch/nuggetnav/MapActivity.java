@@ -33,7 +33,6 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
-import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -95,7 +94,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GeoJsonSource source;
     private MapView mapView;
     private MapboxMap mapboxMap;
-    private Toolbar mTopToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +113,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         animation.setDuration(0);
         animation.start();
 
-        mTopToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mTopToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mTopToolbar);
 
         Button see_reviews = findViewById(R.id.see_reviews);
