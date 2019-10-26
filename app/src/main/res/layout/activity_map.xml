@@ -65,33 +65,26 @@ tools:context=".CompassActivity">
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/distance"
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="@android:style/Widget.Material.RatingBar.Indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Distance"
-                    android:textColor="@android:color/white" />
+                    android:indeterminate="false"
+                    android:max="5"
+                    android:scaleX="1"
+                    android:scaleY="1" />
 
             </LinearLayout>
 
             <TextView
-                android:id="@+id/rating"
+                android:id="@+id/distance"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_weight="1"
-                android:gravity="center|right"
-                android:textColor="@color/colorAccent"
-                android:textSize="30sp" />
-
-            <TextView
-                android:id="@+id/rating2"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center|right"
-                android:text="Overall Rating"
-                android:textColor="#424B57"
-                android:textSize="30sp" />
+                android:gravity="right"
+                android:text="Distance"
+                android:textColor="@android:color/white" />
 
         </LinearLayout>
 

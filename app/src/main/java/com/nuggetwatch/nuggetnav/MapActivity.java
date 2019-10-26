@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -412,20 +413,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     animation.setDuration(300);
                     animation.start();
 
-                    String stars = "";
-                    for (int i = 0; i < feature.properties().get("rating").getAsInt(); i++) {
-                        stars += "★";
-                    }
-                    TextView rating = findViewById(R.id.rating);
-                    rating.setText(stars);
-
-                    stars = "";
-                    for (int i = feature.properties().get("rating").getAsInt(); i < 5; i++) {
-                        stars += "★";
-                    }
-                    TextView starsBlank = findViewById(R.id.rating2);
-                    starsBlank.setText(stars);
-
+                    RatingBar rating = findViewById(R.id.ratingBar);
+                    rating.setRating(feature.properties().get("rating").getAsInt());
                 }
             }
         } else {
