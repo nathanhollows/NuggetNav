@@ -62,8 +62,9 @@ tools:context=".CompassActivity">
                     android:paddingBottom="8dp"
                     android:text="Name"
                     android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/oswald_regular" />
 
                 <RatingBar
                     android:id="@+id/ratingBar"

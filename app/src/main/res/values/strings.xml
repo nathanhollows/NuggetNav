@@ -25,4 +25,10 @@
     <string name="coating">Coating</string>
     <string name="sauces">Sauces</string>
     <string name="overall">Overall</string>
+
+    <string name="prices">Prices</string>
+    <string name="reviews">Reviews</string>
+    <string name="price">Price</string>
+    <string name="quantity">Quantity</string>
+    <string name="ppn">PPN</string>
 </resources>

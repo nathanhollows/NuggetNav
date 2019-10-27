@@ -147,14 +147,16 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 recyclerView.setLayoutFrozen(true);
                 recyclerView.setAdapter(priceAdapter);
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                        layoutManager.getOrientation());
-                recyclerView.addItemDecoration(dividerItemDecoration);
+//                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+//                        layoutManager.getOrientation());
+//                recyclerView.addItemDecoration(dividerItemDecoration);
 
                 if (response.body().size() > 0) {
                     TableRow tableRow = findViewById(R.id.tableRow);
                     tableRow.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
+                    TextView prices_header = findViewById(R.id.prices_header);
+                    prices_header.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -198,11 +200,16 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 reviewAdapter.setClickListener(StoreActivity.this);
                 recyclerView.setAdapter(reviewAdapter);
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                        layoutManager.getOrientation());
-                recyclerView.addItemDecoration(dividerItemDecoration);
+//                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+//                        layoutManager.getOrientation());
+//                recyclerView.addItemDecoration(dividerItemDecoration);
 
                 progressBar.setVisibility(View.GONE);
+
+                if (response.body().size() > 0) {
+                    TextView reviews = findViewById(R.id.reviews_header);
+                    reviews.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
