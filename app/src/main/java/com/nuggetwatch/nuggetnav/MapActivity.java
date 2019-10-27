@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -51,6 +54,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Map;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
@@ -59,14 +63,10 @@ import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.lt;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
-import static com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
-import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconSize;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textColor;
@@ -81,11 +81,6 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.textSize;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    private static final String GEOJSON_SOURCE_ID = "GEOJSON_SOURCE_ID";
-    private static final String MARKER_IMAGE_ID = "MARKER_IMAGE_ID";
-    private static final String CALLOUT_IMAGE_ID = "CALLOUT_IMAGE_ID";
-    private static final String MARKER_LAYER_ID = "MARKER_LAYER_ID";
-    private static final String CALLOUT_LAYER_ID = "CALLOUT_LAYER_ID";
     private String storeName;
     private String storeNicename;
     private String storeJson;
@@ -94,6 +89,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GeoJsonSource source;
     private MapView mapView;
     private MapboxMap mapboxMap;
+    private Style loadedStyle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,15 +97,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_map);
 
-        checkLocationPermission();
-
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
         LinearLayout popup = findViewById(R.id.popup);
 
-        ObjectAnimator animation = ObjectAnimator.ofFloat(popup, "translationY",675f);
+        ObjectAnimator animation = ObjectAnimator.ofFloat(popup, "translationY",675);
         animation.setDuration(0);
         animation.start();
 
@@ -147,11 +141,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
+
+    // If permissions are given for location then enable location component
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        for (int i = 0; i < permissions.length; i++) {
+            Log.d("PERMS::", permissions[i] + " " + grantResults[i]);
+            if (permissions[i].equals("android.permission.ACCESS_FINE_LOCATION") && grantResults[i] == 0) {
+                enableLocationComponent(loadedStyle);
+            }
+        }
+    }
+
     // https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
-    public boolean checkLocationPermission() {
+    public void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -179,9 +185,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
         } else {
-            return true;
+            enableLocationComponent(loadedStyle);
         }
     }
 
@@ -320,42 +325,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     }
 
-    /**
-     * Adds a SymbolLayer to the map to show the Feature properties info window.
-     */
-    private void setUpInfoWindowLayer(@NonNull Style loadedStyle) {
-        loadedStyle.addLayer(new SymbolLayer(CALLOUT_LAYER_ID, GEOJSON_SOURCE_ID)
-                .withProperties(
-                        // show image with id title based on the value of the name feature property
-                        iconImage(CALLOUT_IMAGE_ID),
-
-                        // set anchor of icon to bottom-left
-                        iconAnchor(ICON_ANCHOR_BOTTOM),
-
-                        // prevent the feature property window icon from being visible even
-                        // if it collides with other previously drawn symbols
-                        iconAllowOverlap(false),
-
-                        // prevent other symbols from being visible even if they collide with the feature property window icon
-                        iconIgnorePlacement(false),
-
-                        // offset the info window to be above the marker
-                        iconOffset(new Float[] {-2f, -28f})
-                ));
-    }
-
-    /**
-     * Needed to show the Feature properties info window.
-     */
-    private void refreshSource(Feature featureAtClickPoint) {
-        if (source != null) {
-            source.setGeoJson(featureAtClickPoint);
-        }
-    }
-
     @SuppressWarnings( {"MissingPermission"})
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-
         // Get an instance of the component
         LocationComponent locationComponent = mapboxMap.getLocationComponent();
 
@@ -371,6 +342,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // Set the component's render mode
         locationComponent.setRenderMode(RenderMode.NORMAL);
+
+        // Zoom to user location
+        CameraPosition position = new CameraPosition.Builder()
+                .target(new LatLng(
+                        mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude(),
+                        mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude()
+                )) // Sets the new camera position
+                .zoom(13) // Sets the zoom
+                .build(); // Creates a CameraPosition from the builder
+
+        mapboxMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), 1000);
+
+
     }
 
     @Override
@@ -428,31 +413,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     storeLng = marker.longitude();
                     name.setText(storeName);
 
-                    NumberFormat formatter = new DecimalFormat("#.##");
-                    float distanceTo = -1f;
-                    String unit = "km";
+                    if (mapboxMap.getLocationComponent().isLocationComponentActivated()) {
+                        NumberFormat formatter = new DecimalFormat("#.##");
+                        float distanceTo = -1f;
+                        String unit = "km";
 
-                    if (mapboxMap.getLocationComponent().getLastKnownLocation() != null) {
-                        Location nuggetLoc = new Location("");
-                        nuggetLoc.setLatitude(marker.latitude());
-                        nuggetLoc.setLongitude(marker.longitude());
+                        if (mapboxMap.getLocationComponent().getLastKnownLocation() != null) {
+                            Location nuggetLoc = new Location("");
+                            nuggetLoc.setLatitude(marker.latitude());
+                            nuggetLoc.setLongitude(marker.longitude());
 
-                        Location currentLoc = new Location("");
-                        currentLoc.setLatitude(mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude());
-                        currentLoc.setLongitude(mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude());
+                            Location currentLoc = new Location("");
+                            currentLoc.setLatitude(mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude());
+                            currentLoc.setLongitude(mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude());
 
-                        distanceTo = nuggetLoc.distanceTo(currentLoc) / 1000;
+                            distanceTo = nuggetLoc.distanceTo(currentLoc) / 1000;
 
-                        if (distanceTo < 1) {
-                            unit = "m";
-                            distanceTo = Math.round(distanceTo * 1000);
+                            if (distanceTo < 1) {
+                                unit = "m";
+                                distanceTo = Math.round(distanceTo * 1000);
+                            }
+
+                            TextView distance = findViewById(R.id.distance);
+                            distance.setText(formatter.format(distanceTo) + unit + " away");
                         }
-
+                    } else {
                         TextView distance = findViewById(R.id.distance);
-                        distance.setText(formatter.format(distanceTo) + unit + " away");
+                        distance.setVisibility(View.GONE);
                     }
 
-                    ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",0f);
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY", 0f);
                     animation.setDuration(300);
                     animation.start();
 
@@ -461,7 +451,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
         } else {
-            ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",675);
+            LinearLayout popup = findViewById(R.id.popup);
+            ObjectAnimator animation = ObjectAnimator.ofFloat(findViewById(R.id.popup), "translationY",popup.getHeight());
             animation.setDuration(300);
             animation.start();
         }
@@ -486,13 +477,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 Toast.makeText(MapActivity.this, R.string.fetching_locations,
                         Toast.LENGTH_SHORT).show();
 
-                if (ContextCompat.checkSelfPermission(MapActivity.this,
-                        Manifest.permission.ACCESS_FINE_LOCATION)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    enableLocationComponent(style);
-                }
+                // Check for location permissions
+                // Should it succeed the location component will be enabled
+                loadedStyle = style;
+                checkLocationPermission();
 
-                setUpInfoWindowLayer(style);
             }
         });
 
