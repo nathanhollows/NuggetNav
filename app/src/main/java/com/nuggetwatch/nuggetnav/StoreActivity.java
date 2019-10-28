@@ -24,8 +24,11 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.Cache;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -123,10 +126,20 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 .setLenient()
                 .create();
 
+        int cacheSize = 10 * 1024 * 1024; // 10MB
+
+        File httpCacheDirectory = new File(this.getCacheDir(), "http-cache");
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient builder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new CacheInterceptor())
+                .cache(cache)
+                .build();
+
         Retrofit retrofitInstance = new Retrofit
                 .Builder()
                 .baseUrl("https://nuggetwatch.co.nz/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(builder)
                 .build();
 
         API apiService = retrofitInstance.create(API.class);
@@ -172,6 +185,15 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
 
     public void getReviews() {
 
+        int cacheSize = 10 * 1024 * 1024; // 10MB
+
+        File httpCacheDirectory = new File(this.getCacheDir(), "http-cache");
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient builder = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new CacheInterceptor())
+                .cache(cache)
+                .build();
+
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
@@ -180,6 +202,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 .Builder()
                 .baseUrl("https://nuggetwatch.co.nz/")
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(builder)
                 .build();
 
         API apiService = retrofitInstance.create(API.class);
