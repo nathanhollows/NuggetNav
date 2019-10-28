@@ -49,8 +49,6 @@ import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -117,7 +115,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         animation.setDuration(0);
         animation.start();
 
-        Toolbar mTopToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mTopToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mTopToolbar);
 
         Button see_reviews = findViewById(R.id.see_reviews);

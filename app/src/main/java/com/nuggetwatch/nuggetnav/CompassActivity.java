@@ -3,7 +3,6 @@ package com.nuggetwatch.nuggetnav;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.GeomagneticField;
@@ -15,9 +14,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +21,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -84,12 +80,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         checkLocationPermission();
         setContentView(R.layout.activity_compass);
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        Menu menu = navView.getMenu();
-        MenuItem menuItem = menu.getItem(2);
-        menuItem.setChecked(true);
-
-        navView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         textDirection = (TextView) findViewById(R.id.text);
         compassView = (CompassView) findViewById(R.id.compass);
 
@@ -105,30 +95,14 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         }
 
         onPermissionGranted();
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Nugget Compass");
+
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_compass:
-                    return true;
-                case R.id.navigation_home:
-                    Intent intentHome = new Intent(CompassActivity.this, MainActivity.class);
-                    intentHome.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intentHome);
-                    return true;
-                case R.id.navigation_map:
-                    Intent intentMap = new Intent(CompassActivity.this, MapActivity.class);
-                    intentMap.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intentMap);
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     protected void onStart() {
@@ -139,6 +113,12 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                         == PackageManager.PERMISSION_GRANTED) {
             onPermissionGranted();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     @Override

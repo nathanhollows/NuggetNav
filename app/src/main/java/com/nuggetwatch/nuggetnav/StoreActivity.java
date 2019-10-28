@@ -103,6 +103,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 e.printStackTrace();
             }
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            intent.putExtra("name", name);
             startActivity(intent);
             return true;
         }
@@ -167,9 +168,9 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 recyclerView.setLayoutFrozen(true);
                 recyclerView.setAdapter(priceAdapter);
 
-//                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                        layoutManager.getOrientation());
-//                recyclerView.addItemDecoration(dividerItemDecoration);
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                        layoutManager.getOrientation());
+                recyclerView.addItemDecoration(dividerItemDecoration);
 
                 if (response.body().size() > 0) {
                     TableRow tableRow = findViewById(R.id.tableRow);
