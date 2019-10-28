@@ -26,7 +26,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/dots_pattern"
             android:orientation="vertical">
 
             <LinearLayout
@@ -76,11 +75,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:padding="8dp"
+                android:padding="16sp"
                 android:text="@string/prices"
                 android:textColor="@color/colorPrimary"
                 android:textSize="28sp"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:fontFamily="@font/oswald_medium" />
 
             <TableRow
@@ -88,14 +87,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
+                android:paddingLeft="16sp"
                 android:paddingTop="8dp"
+                android:paddingRight="16sp"
                 android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:gravity="center|left"
                     android:text="@string/price"
@@ -116,7 +116,6 @@
                     android:id="@+id/textView5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="8dp"
                     android:layout_weight="1"
                     android:gravity="center|right"
                     android:text="@string/ppn"
@@ -138,11 +137,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/white"
-                android:padding="8dp"
+                android:padding="16sp"
                 android:text="@string/reviews"
                 android:textColor="@color/colorPrimary"
                 android:textSize="28sp"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:fontFamily="@font/oswald_medium" />
 
             <androidx.recyclerview.widget.RecyclerView

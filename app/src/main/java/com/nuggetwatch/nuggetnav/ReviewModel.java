@@ -1,6 +1,8 @@
 package com.nuggetwatch.nuggetnav;
 
-public class ReviewModel {
+import java.io.Serializable;
+
+public class ReviewModel implements Serializable {
 
     private String webid;
     private String comments;

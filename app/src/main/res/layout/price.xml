@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:paddingLeft="16sp"
+    android:paddingTop="8sp"
+    android:paddingRight="16sp"
+    android:paddingBottom="8sp">
 
     <TextView
         android:id="@+id/main_price"
@@ -17,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center"/>
+        android:gravity="center" />
 
     <TextView
         android:id="@+id/main_per"

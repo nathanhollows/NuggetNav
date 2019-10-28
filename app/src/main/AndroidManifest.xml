@@ -25,6 +25,7 @@
         <activity android:name=".CompassActivity"></activity>
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".StoreActivity"></activity>
+        <activity android:name=".ReadReviewActivity"></activity>
     </application>
 
 </manifest>

@@ -111,7 +111,10 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
 
     @Override
     public void onReviewClick(View view, int position) {
-        Toast.makeText(this, "You clicked " + reviewAdapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(this, ReadReviewActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        i.putExtra("sampleObject", reviewAdapter.getItem(position));
+        startActivity(i);
     }
 
     public void getPrices() {
@@ -200,9 +203,9 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 reviewAdapter.setClickListener(StoreActivity.this);
                 recyclerView.setAdapter(reviewAdapter);
 
-//                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-//                        layoutManager.getOrientation());
-//                recyclerView.addItemDecoration(dividerItemDecoration);
+                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                        layoutManager.getOrientation());
+                recyclerView.addItemDecoration(dividerItemDecoration);
 
                 progressBar.setVisibility(View.GONE);
 
