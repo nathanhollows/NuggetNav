@@ -26,8 +26,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -49,12 +47,20 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Map;
+
+import okhttp3.Cache;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
@@ -90,12 +96,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private MapView mapView;
     private MapboxMap mapboxMap;
     private Style loadedStyle;
+    private String locations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_map);
+
+        // Begin fetching locations as early as possible
+        fetchLocations();
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
@@ -204,12 +214,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-/*        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_favorite) {
-            Toast.makeText(this, "Action clicked", Toast.LENGTH_LONG).show();
-            return true;
-        }*/
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -256,19 +260,60 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapView.onSaveInstanceState(outState);
     }
 
+    private void fetchLocations() {
+
+        int cacheSize = 10 * 1024 * 1024; // 10MB
+
+        File httpCacheDirectory = new File(this.getCacheDir(), "http-cache");
+        Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new CacheInterceptor())
+                .cache(cache)
+                .build();
+
+        String url = "https://nuggetwatch.co.nz/locations";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    final String myResponse = response.body().string();
+
+                    MapActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            locations = myResponse;
+                            if (loadedStyle != null && loadedStyle.isFullyLoaded()) {
+                                addClusteredGeoJsonSource(loadedStyle);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
     private void addClusteredGeoJsonSource(@NonNull Style loadedMapStyle) {
 
         // Add a new source from the GeoJSON data and set the 'cluster' option to true.
         try {
             source = new GeoJsonSource("locations",
-                    new URI("https://nuggetwatch.co.nz/locations"),
+                    locations,
                     new GeoJsonOptions()
                             .withCluster(true)
                             .withClusterMaxZoom(14)
                             .withClusterRadius(50)
             );
             loadedMapStyle.addSource(source);
-        } catch (URISyntaxException uriSyntaxException) {
+        } catch (Exception e) {
         }
 
 
@@ -468,14 +513,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/nathanhollows/ck03c12ce0ymt1cpgsg8vv5rw"), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
+                Toast.makeText(MapActivity.this, R.string.fetching_locations,
+                        Toast.LENGTH_SHORT).show();
+
                 addClusteredGeoJsonSource(style);
+
                 style.addImage(
                         "marker",
                         BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.marker))
                 );
-
-                Toast.makeText(MapActivity.this, R.string.fetching_locations,
-                        Toast.LENGTH_SHORT).show();
 
                 // Check for location permissions
                 // Should it succeed the location component will be enabled
