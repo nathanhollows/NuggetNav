@@ -1,6 +1,7 @@
 package com.nuggetwatch.nuggetnav;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -66,5 +67,10 @@ public class ReadReviewActivity extends AppCompatActivity {
         coatingBar.setRating(review.getCoating());
         saucesBar.setRating(review.getSauces());
         overallBar.setRating(review.getOverall());
+
+        if (review.getSauces() == 0) {
+            saucesBar.setVisibility(View.GONE);
+            findViewById(R.id.sauces).setVisibility(View.GONE);
+        }
     }
 }
