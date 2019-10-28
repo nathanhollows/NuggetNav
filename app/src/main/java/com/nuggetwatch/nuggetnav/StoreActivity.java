@@ -12,6 +12,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -41,6 +42,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
     private PriceAdapter priceAdapter;
     private ReviewAdapter reviewAdapter;
     private ProgressBar progressBar;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +50,17 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
         setContentView(R.layout.activity_store);
 
         TextView name = findViewById(R.id.name);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         try {
             json = new JSONObject(getIntent().getStringExtra("json"));
-            name.setText(json.getJSONObject("properties").getString("chain"));
+            this.name = json.getJSONObject("properties").getString("chain");
+            name.setText(this.name);
             getSupportActionBar().setTitle(json.getJSONObject("properties").getString("chain"));
             RatingBar overall = findViewById(R.id.rating_overall);
             overall.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
@@ -84,7 +87,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -116,7 +119,8 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
     public void onReviewClick(View view, int position) {
         Intent i = new Intent(this, ReadReviewActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        i.putExtra("sampleObject", reviewAdapter.getItem(position));
+        i.putExtra("review", reviewAdapter.getItem(position));
+        i.putExtra("name", this.name);
         startActivity(i);
     }
 
