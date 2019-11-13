@@ -17,6 +17,10 @@ public class ChainsModel {
     @Expose
     private int rating;
 
+    @SerializedName("rating_count")
+    @Expose
+    private int rating_count;
+
     public String getName() {
         return name;
     }
@@ -27,6 +31,10 @@ public class ChainsModel {
 
     public int getRating() {
         return rating;
+    }
+
+    public int getRatingCount() {
+        return rating_count;
     }
 
     public void setName(String name) {
@@ -41,11 +49,8 @@ public class ChainsModel {
         this.rating = rating;
     }
 
-    @Override
-    public String toString() {
-        return "Movie {" +
-                "actors='" + name + '\'' +
-                '}';
+    public void setRatingCount(int rating) {
+        this.rating_count = rating_count;
     }
 
 }

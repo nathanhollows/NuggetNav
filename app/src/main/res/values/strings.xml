@@ -31,4 +31,11 @@
     <string name="price">Price</string>
     <string name="quantity">Quantity</string>
     <string name="ppn">PPN</string>
+    <string name="submit">Submit</string>
+
+    <string name="missingPrices">There are no prices to show. <a href="">Add one?</a></string>
+    <string name="badPrices">Are these prices not right? <a href="">Let us know.</a></string>
+
+    <string name="map_distance">%f%s away</string>
+    <string name="map_rating_count"> (%d)</string>
 </resources>
