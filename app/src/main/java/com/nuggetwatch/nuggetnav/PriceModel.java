@@ -2,7 +2,6 @@ package com.nuggetwatch.nuggetnav;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Formatter;
 
 public class PriceModel {
 

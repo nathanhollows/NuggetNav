@@ -2,16 +2,12 @@ package com.nuggetwatch.nuggetnav;
 
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.util.List;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,10 +21,9 @@ public class ChainsFragment extends Fragment {
 
 
     @Override
-    public ListView onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        ListView listView = new ListView(getActivity());
-        return listView;
+    public ListView onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+        return new ListView(getActivity());
     }
 
 }

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
-    public boolean checkLocationPermission() {
+    public void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -92,9 +92,6 @@ public class MainActivity extends AppCompatActivity {
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
-        } else {
-            return true;
         }
     }
 

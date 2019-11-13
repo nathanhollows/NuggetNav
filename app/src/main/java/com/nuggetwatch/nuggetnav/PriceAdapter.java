@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -22,16 +23,17 @@ public class PriceAdapter extends RecyclerView.Adapter<PriceAdapter.ViewHolder> 
         this.mData = data;
     }
 
-    // inflates the row layout from xml when needed
+    // inflates the row layout from styles when needed
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.price, parent, false);
         return new ViewHolder(view);
     }
 
     // binds the data to the TextView in each row
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PriceModel price = mData.get(position);
         holder.price.setText(String.valueOf(price.getPrice()));
         holder.number.setText(String.valueOf(price.getNumber()));
