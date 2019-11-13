@@ -5,10 +5,10 @@
     tools:context=".MapActivity">
 
     <item
-        android:id="@+id/action_zoom"
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
         android:orderInCategory="300"
-        android:title="Zoom"
-        android:icon="@drawable/ic_my_location_black_24dp"
+        android:title="Settings"
         app:showAsAction="ifRoom"></item>
 
 </menu>
