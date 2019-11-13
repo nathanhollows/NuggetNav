@@ -26,6 +26,8 @@
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".StoreActivity"></activity>
         <activity android:name=".ReadReviewActivity"></activity>
+        <activity android:name=".ReviewActivity" />
+        <activity android:name=".RegisterActivity" />
     </application>
 
 </manifest>
