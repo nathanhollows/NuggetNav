@@ -1,10 +1,16 @@
 package com.nuggetwatch.nuggetnav;
 
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -15,6 +21,9 @@ import java.util.Date;
 public class ReadReviewActivity extends AppCompatActivity {
 
     private ReviewModel review;
+    public static final String MY_PREFS_NAME = "NuggetNavThumbs";
+    private SharedPreferences prefs;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,18 +32,22 @@ public class ReadReviewActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         getSupportActionBar().setTitle(getIntent().getStringExtra("name"));
 
         review = (ReviewModel) getIntent().getSerializableExtra("review");
 
-        try {
-            loadReview();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+
+        loadReview();
+
+        // // Hide thumbs for now
+        // LinearLayout thumbs = findViewById(R.id.thumbs);
+        // thumbs.setVisibility(View.GONE);
+        loadThumbs();
     }
 
     @Override
@@ -43,7 +56,7 @@ public class ReadReviewActivity extends AppCompatActivity {
         return true;
     }
 
-    private void loadReview() throws ParseException {
+    private void loadReview() {
         TextView name = findViewById(R.id.name);
         TextView date = findViewById(R.id.date);
         TextView comments = findViewById(R.id.comments);
@@ -54,12 +67,17 @@ public class ReadReviewActivity extends AppCompatActivity {
         RatingBar saucesBar = findViewById(R.id.saucesBar);
         RatingBar overallBar = findViewById(R.id.overallBar);
 
-        SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat formatOut = new SimpleDateFormat("dd MMMM");
-        Date reviewDate = formatIn.parse(review.getDate());
+        try {
+            SimpleDateFormat formatIn = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat formatOut = new SimpleDateFormat("dd MMMM yy");
+            Date reviewDate = formatIn.parse(review.getDate());
+            assert reviewDate != null;
+            date.setText(formatOut.format(reviewDate));
+        } catch (ParseException e) {
+            date.setVisibility(View.GONE);
+        }
 
         name.setText(review.getName());
-        date.setText(formatOut.format(reviewDate));
         comments.setText(review.getComments());
 
         flavourBar.setRating(review.getFlavour());
@@ -69,8 +87,44 @@ public class ReadReviewActivity extends AppCompatActivity {
         overallBar.setRating(review.getOverall());
 
         if (review.getSauces() == 0) {
-            saucesBar.setVisibility(View.GONE);
-            findViewById(R.id.sauces).setVisibility(View.GONE);
+            LinearLayout sauces = findViewById(R.id.saucesContainer);
+            sauces.setVisibility(View.GONE);
+        }
+    }
+
+    private void loadThumbs() {
+
+        final ImageView thumbUp = findViewById(R.id.thumbUp);
+        final ImageView thumbDown = findViewById(R.id.thumbDown);
+
+        thumbUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                thumbUp.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+                thumbDown.setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+
+                prefs.edit().putInt(review.getWebid(), 1).apply();
+            }
+        });
+
+        thumbDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                thumbDown.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+                thumbUp.setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+
+                prefs.edit().putInt(review.getWebid(), 0).apply();
+            }
+        });
+
+        int result = prefs.getInt(review.getWebid(), -1);
+
+        if (result == 1) {
+            thumbUp.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+            thumbDown.setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+        } else if (result == 0) {
+            thumbDown.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+            thumbUp.setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
         }
     }
 }
