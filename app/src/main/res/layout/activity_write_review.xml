@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16sp">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8sp"
+                android:layout_marginBottom="24sp"
+                android:gravity="center"
+                android:text="TextView"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp"
+                app:fontFamily="@font/oswald_medium" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/flavour"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                    android:id="@+id/flavourBar"
+                    style="@style/Widget.MaterialRatingBar.RatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:mrb_fillBackgroundStars="true"
+                    app:mrb_indeterminateTint="@color/colorPrimary"
+                    app:mrb_progressTint="@color/colorAccent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/mouthfeel"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                    android:id="@+id/mouthfeelBar"
+                    style="@style/Widget.MaterialRatingBar.RatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:mrb_fillBackgroundStars="true"
+                    app:mrb_indeterminateTint="@color/colorPrimary"
+                    app:mrb_progressTint="@color/colorAccent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/coating"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                    android:id="@+id/coatingBar"
+                    style="@style/Widget.MaterialRatingBar.RatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:mrb_fillBackgroundStars="true"
+                    app:mrb_indeterminateTint="@color/colorPrimary"
+                    app:mrb_progressTint="@color/colorAccent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/saucesContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/sauces"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                    android:id="@+id/saucesBar"
+                    style="@style/Widget.MaterialRatingBar.RatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:mrb_fillBackgroundStars="true"
+                    app:mrb_indeterminateTint="@color/colorPrimary"
+                    app:mrb_progressTint="@color/colorAccent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16sp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/overall"
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                    android:id="@+id/overallBar"
+                    style="@style/Widget.MaterialRatingBar.RatingBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:mrb_fillBackgroundStars="true"
+                    app:mrb_indeterminateTint="@color/colorPrimary"
+                    app:mrb_progressTint="@color/colorAccent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="16sp"
+                android:layout_marginBottom="24sp"
+                android:paddingLeft="2sp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="2sp"
+                app:boxCornerRadiusBottomStart="2sp"
+                app:boxCornerRadiusTopEnd="2sp"
+                app:boxCornerRadiusTopStart="2sp"
+                app:boxStrokeColor="@color/colorPrimary"
+                app:helperText="Reviews without comments are hidden but count towards average ratings">
+
+                <EditText
+                    android:id="@+id/commentsInput"
+                    style="@style/Widget.AppCompat.EditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16sp"
+                    android:ems="10"
+                    android:gravity="start|top"
+                    android:hint="Review Comments"
+                    android:includeFontPadding="true"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:minLines="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:text="@string/submit" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

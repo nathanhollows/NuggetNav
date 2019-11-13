@@ -46,14 +46,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:background="@color/colorPrimary"
-                android:orientation="vertical">
+                android:background="@color/colorPrimary">
 
                 <TextView
                     android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="100sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
                     android:autoText="true"
+                    android:background="@color/colorPrimary"
                     android:gravity="center"
                     android:padding="16sp"
                     android:text="@string/reviews"
@@ -65,26 +66,78 @@
                     app:fontFamily="@font/oswald_regular" />
 
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_horizontal">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/rating_overall"
                         style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16sp"
+                        android:layout_marginBottom="8sp"
                         android:isIndicator="true"
                         android:numStars="5"
                         android:stepSize="1"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:mrb_fillBackgroundStars="true"
                         app:mrb_progressBackgroundTint="#657585"
                         app:mrb_progressTint="@color/colorAccent" />
-                </RelativeLayout>
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_overall2"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_overall3"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_overall4"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_overall5"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+                </LinearLayout>
 
             </LinearLayout>
 

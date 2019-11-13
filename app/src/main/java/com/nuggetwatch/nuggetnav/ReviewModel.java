@@ -14,6 +14,9 @@ public class ReviewModel implements Serializable {
     private int sauces;
     private int overall;
 
+    private int positive;
+    private int negative;
+
     private String date;
     private float score;
 
@@ -98,6 +101,22 @@ public class ReviewModel implements Serializable {
 
     public void setOverall(int overall) {
         this.overall = overall;
+    }
+
+    public int getPostive() {
+        return positive;
+    }
+
+    public void setPositive(int positive) {
+        this.positive = positive;
+    }
+
+    public int getNegative() {
+        return negative;
+    }
+
+    public void setNegative(int negative) {
+        this.negative = negative;
     }
 
     public String getDate() {

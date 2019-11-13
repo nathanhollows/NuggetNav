@@ -1,24 +1,26 @@
 package com.nuggetwatch.nuggetnav;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -36,13 +38,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class StoreActivity extends AppCompatActivity implements PriceAdapter.ItemClickListener, ReviewAdapter.ReviewClickListener {
+public class StoreActivity extends AppCompatActivity implements ReviewAdapter.ReviewClickListener {
 
     private JSONObject json = null;
     private PriceAdapter priceAdapter;
     private ReviewAdapter reviewAdapter;
     private ProgressBar progressBar;
+    private LinearLayout pricesLayout, reviewsLayout;
     private String name;
+    private static final String MY_PREFS_NAME = "Prefs";
+    private SharedPreferences prefs;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +58,9 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
         TextView name = findViewById(R.id.name);
         progressBar = findViewById(R.id.progressBar);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
         try {
             json = new JSONObject(getIntent().getStringExtra("json"));
-            this.name = json.getJSONObject("properties").getString("chain");
+             this.name = json.getJSONObject("properties").getString("chain");
             name.setText(this.name);
             getSupportActionBar().setTitle(json.getJSONObject("properties").getString("chain"));
             RatingBar overall = findViewById(R.id.rating_overall);
@@ -68,9 +69,37 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
             Log.e("JSON:: ", "Could not parse malformed JSON: " + getIntent().getStringExtra("json"));
         }
 
+        prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+
+        FloatingActionButton fab = findViewById(R.id.write_button);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                writeReviewHandover();
+            }
+        });
+
+        reviewsLayout = findViewById(R.id.reviewsLayout);
+        pricesLayout = findViewById(R.id.pricesLayout);
+        reviewsLayout.setVisibility(View.GONE);
+        pricesLayout.setVisibility(View.GONE);
+
         getPrices();
         getReviews();
+    }
 
+    private void writeReviewHandover() {
+        Intent intent;
+
+        if (prefs.contains("name")){
+            intent = new Intent(StoreActivity.this, ReviewActivity.class);
+        } else {
+            intent = new Intent(StoreActivity.this, RegisterActivity.class);
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("name", name);
+        intent.putExtra("nicename", getIntent().getStringExtra("nicename"));
+        startActivity(intent);
     }
 
     @Override
@@ -79,18 +108,18 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
         return true;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.store_menu, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.store_menu, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // as you specify a parent activity in AndroidManifest.styles.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
@@ -109,11 +138,6 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onItemClick(View view, int position) {
-        Toast.makeText(this, "You clicked " + priceAdapter.getItem(position) + " on row number " + position, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -156,6 +180,8 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
             e.printStackTrace();
         }
 
+        final TextView priceMessage = findViewById(R.id.priceMessage);
+
         apiCall.enqueue(new Callback<List<PriceModel>>() {
             @Override
             public void onResponse(Call<List<PriceModel>> call, Response<List<PriceModel>> response) {
@@ -164,7 +190,6 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 LinearLayoutManager layoutManager = new LinearLayoutManager(StoreActivity.this);
                 recyclerView.setLayoutManager(layoutManager);
                 priceAdapter = new PriceAdapter(StoreActivity.this, response.body());
-                priceAdapter.setClickListener(StoreActivity.this);
                 recyclerView.setLayoutFrozen(true);
                 recyclerView.setAdapter(priceAdapter);
 
@@ -173,17 +198,21 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 recyclerView.addItemDecoration(dividerItemDecoration);
 
                 if (response.body().size() > 0) {
-                    TableRow tableRow = findViewById(R.id.tableRow);
-                    tableRow.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
-                    TextView prices_header = findViewById(R.id.prices_header);
-                    prices_header.setVisibility(View.VISIBLE);
+                    pricesLayout.setVisibility(View.VISIBLE);
+                    priceMessage.setText(R.string.badPrices);
+                } else {
+                    pricesLayout.setVisibility(View.VISIBLE);
+                    priceMessage.setText(R.string.missingPrices);
+
+                    TableRow priceTableHeader = findViewById(R.id.tableRow);
+                    priceTableHeader.setVisibility(View.GONE);
+                    View divider = findViewById(R.id.divider);
+                    divider.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(Call<List<PriceModel>> call, Throwable t) {
-                // Todo: Let the user know it failed
             }
         });
     }
@@ -238,8 +267,7 @@ public class StoreActivity extends AppCompatActivity implements PriceAdapter.Ite
                 progressBar.setVisibility(View.GONE);
 
                 if (response.body().size() > 0) {
-                    TextView reviews = findViewById(R.id.reviews_header);
-                    reviews.setVisibility(View.VISIBLE);
+                    reviewsLayout.setVisibility(View.VISIBLE);
                 }
             }
 

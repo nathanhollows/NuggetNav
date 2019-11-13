@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,7 +28,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         this.mData = data;
     }
 
-    // inflates the row layout from xml when needed
+    // inflates the row layout from styles when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.review, parent, false);
@@ -40,6 +42,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         holder.name.setText(review.getName());
         holder.comments.setText(review.getComments());
         holder.overall.setRating(review.getOverall());
+        holder.overallBar.setText(review.getOverall() + "/5 Overall");
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat newFormat = new SimpleDateFormat("dd MMMM");
@@ -64,6 +67,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         TextView date;
         TextView comments;
         RatingBar overall;
+        TextView overallBar;
 
 
         ViewHolder(View itemView) {
@@ -72,6 +76,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
             date = itemView.findViewById(R.id.date);
             comments = itemView.findViewById(R.id.comments);
             overall = itemView.findViewById(R.id.overallBar);
+            overallBar = itemView.findViewById(R.id.overallText);
+
             itemView.setOnClickListener(this);
         }
 
