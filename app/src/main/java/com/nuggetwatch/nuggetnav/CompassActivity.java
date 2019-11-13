@@ -14,11 +14,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -40,8 +42,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CompassActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
 
-    public static final String NA = "N/A";
-    public static final String FIXED = "FIXED";
+    private static final String FIXED = "FIXED";
     // location min time
     private static final int LOCATION_MIN_TIME = 30 * 1000;
     // location min distance
@@ -54,8 +55,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private float[] rotation = new float[9];
     // orientation (azimuth, pitch, roll)
     private float[] orientation = new float[3];
-    // smoothed values
-    private float[] smoothed = new float[3];
     // sensor manager
     private SensorManager sensorManager;
     // sensor gravity
@@ -65,14 +64,20 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private Location currentLocation;
     private Location nugget = new Location("Nugget");
     private GeomagneticField geomagneticField;
-    private double bearing = 0;
-    private TextView textDirection, textLat, textLong;
+    private TextView textDirection;
     private CompassView compassView;
     private boolean found = false;
-
+    private float distanceTo = 0;
+    private DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+    private NumberFormat formatter = new DecimalFormat("#0.00", dfs);
+    private NumberFormat mFormatter = new DecimalFormat("#0", dfs);
+    private String unit = "km";
     private boolean fixed = false;
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
+    public CompassActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +85,8 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         checkLocationPermission();
         setContentView(R.layout.activity_compass);
 
-        textDirection = (TextView) findViewById(R.id.text);
-        compassView = (CompassView) findViewById(R.id.compass);
+        textDirection = findViewById(R.id.text);
+        compassView = findViewById(R.id.compass);
 
         // Keep the screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -98,9 +103,12 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Nugget Compass");
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setTitle("Nugget Compass");
+
+        dfs.setDecimalSeparator('.');
 
     }
 
@@ -132,17 +140,18 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
     protected void onPermissionGranted() {
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         sensorGravity = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        sensorManager.registerListener(this, sensorGravity, sensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, sensorMagnetic, sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorGravity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted
+            return;
         }
 
 
@@ -198,14 +207,15 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
             apiCall.enqueue(new Callback<NearestModel>() {
                 @Override
-                public void onResponse(Call<NearestModel> call, Response<NearestModel> response) {
+                public void onResponse(@NonNull Call<NearestModel> call, @NonNull Response<NearestModel> response) {
+                    assert response.body() != null;
                     nugget.setLatitude(response.body().getLat());
                     nugget.setLongitude(response.body().getLng());
                     found = true;
                 }
 
                 @Override
-                public void onFailure(Call<NearestModel> call, Throwable t) {
+                public void onFailure(@NonNull Call<NearestModel> call, @NonNull Throwable t) {
                     Toast.makeText(getApplicationContext(), "Could not fetch nugget locations", Toast.LENGTH_LONG);
                 }
             });
@@ -217,18 +227,17 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
     public void updateLocation(Location location) {
         if (found) {
-            DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-            dfs.setDecimalSeparator('.');
-            NumberFormat formatter = new DecimalFormat("#0.00", dfs);
-
-            TextView distance = (TextView) findViewById(R.id.textDistance);
-            float distanceTo = currentLocation.distanceTo(nugget) / 1000;
-            String unit = "km";
+            TextView distance = findViewById(R.id.textDistance);
+            distanceTo = currentLocation.distanceTo(nugget) / 1000;
             if (distanceTo < 1) {
                 unit = "m";
                 distanceTo *= 1000;
+                distanceTo = Math.round(distanceTo);
+                distance.setText(mFormatter.format(distanceTo) + " " + unit);
+            } else {
+                unit = "km";
+                distance.setText(formatter.format(distanceTo) + " " + unit);
             }
-            distance.setText(formatter.format(distanceTo) + " " + unit);
         }
     }
 
@@ -245,6 +254,8 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         if (found) {
             boolean accelOrMagnetic = false;
 
+            // smoothed values
+            float[] smoothed;
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
                 // Need to use a low pass filter to smooth data
                 smoothed = LowPassFilter.filter(sensorEvent.values, gravity);
@@ -265,7 +276,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
             // Get bearing to target
             SensorManager.getOrientation(rotation, orientation);
             // East degrees of true north
-            bearing = orientation[0];
+            double bearing = orientation[0];
             // Convert from radians to degrees
             bearing = Math.toDegrees(bearing) - currentLocation.bearingTo(nugget);
 
@@ -293,14 +304,17 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private void updateTextDirection(double bearing) {
         int range = (int) (bearing / (360f / 16f));
         String dirText = "";
-        if (range == 15 ||range == 0) dirText = "All roads lead to nuggets.";
-        if (range == 14 ||range == 13) dirText = "A little to the right";
-        if (range == 12 ||range == 11) dirText = "";
-        if (range == 10 ||range == 9) dirText = "";
-        if (range == 8 ||range == 7) dirText = "Nope. Turn around.";
-        if (range == 6 ||range == 5) dirText = "I'm not going to tell you how to live your life.";
-        if (range == 4 ||range == 3) dirText = "";
-        if (range == 2 ||range == 1) dirText = "A little to the left";
+        if (range == 15 ||range == 0) dirText = "Forwards";
+        if (range == 14 ||range == 13) dirText = "Right";
+        if (range == 12 ||range == 11) dirText = "More Right";
+        if (range == 10 ||range == 9) dirText = "Turn Around";
+        if (range == 8 ||range == 7) dirText = "Nope.";
+        if (range == 6 ||range == 5) dirText = "Turn Around";
+        if (range == 4 ||range == 3) dirText = "More Left";
+        if (range == 2 ||range == 1) dirText = "Left";
+        if (distanceTo < 30 && unit.equals("m")) {
+            dirText = "You're pretty much here.";
+        }
 
         // char 176 is the degrees symbol
         // textDirection.setText("" + ((int) bearing) + ((char) 176) + " " + dirText);
@@ -323,7 +337,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     }
 
     // https://stackoverflow.com/questions/40142331/how-to-request-location-permission-at-runtime
-    public boolean checkLocationPermission() {
+    public void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -354,25 +368,17 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                                 Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
-            return false;
-        } else {
-            return true;
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled the result arrays are empty
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    onPermissionGranted();
-                } else {
-                    // Boo!
-                }
-                return;
+        // If request is cancelled the result arrays are empty
+        if (requestCode == MY_PERMISSIONS_REQUEST_LOCATION) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onPermissionGranted();
             }
         }
     }
