@@ -221,6 +221,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             constraintSet.applyTo(container);
 
             popupVisible = false;
+
+            refreshSelected(null);
+
         } else {
             super.onBackPressed();
         }
