@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +31,7 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
     private RatingBar coatingBar;
     private RatingBar saucesBar;
     private RatingBar overallBar;
+    private String nicename;
     public static final String MY_PREFS_NAME = "Prefs";
 
     @Override
@@ -38,6 +40,7 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
         setContentView(R.layout.activity_write_review);
 
         String name = getIntent().getStringExtra("name");
+        nicename = getIntent().getStringExtra("nicename");
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -78,13 +81,13 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
         RequestBody formBody = new FormBody.Builder()
                 .add("name", prefs.getString("name", ""))
                 .add("email", prefs.getString("email", ""))
-                .add("chain", getIntent().getStringExtra("nicename"))
+                .add("chain", nicename)
                 .add("comments", comments.getText().toString())
-                .add("flavour", String.valueOf(flavourBar.getRating()))
-                .add("mouthfeel", String.valueOf(mouthfeelBar.getRating()))
-                .add("coating", String.valueOf(coatingBar.getRating()))
-                .add("sauces", String.valueOf(saucesBar.getRating()))
-                .add("overall", String.valueOf(overallBar.getRating()))
+                .add("flavour", String.valueOf(((int) flavourBar.getRating())))
+                .add("mouthfeel", String.valueOf((int) mouthfeelBar.getRating()))
+                .add("coating", String.valueOf((int) coatingBar.getRating()))
+                .add("sauces", String.valueOf((int) saucesBar.getRating()))
+                .add("overall", String.valueOf((int) overallBar.getRating()))
                 .build();
 
         Request request = new Request.Builder()
@@ -95,12 +98,13 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("CALL::", e.getMessage());
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.d("CALL::", "" + e.getMessage());
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                assert response.body() != null;
                 Log.d("CALL::", response.body().string());
                 Log.d("CALL::", response.message());
             }
