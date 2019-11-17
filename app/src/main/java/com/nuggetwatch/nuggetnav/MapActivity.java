@@ -535,8 +535,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             // Ensure the feature has properties defined
             if (feature.properties() != null) {
 
-                assert feature.geometry() != null;
-                Point marker = Point.fromJson(feature.geometry().toJson());
+                Point marker = null;
+                if (feature.geometry() != null) {
+                    marker = Point.fromJson(feature.geometry().toJson());
+                }
 
                 if (feature.properties().has("cluster_id")) {
 
