@@ -45,9 +45,9 @@ public class ReadReviewActivity extends AppCompatActivity {
         loadReview();
 
         // // Hide thumbs for now
-        // LinearLayout thumbs = findViewById(R.id.thumbs);
-        // thumbs.setVisibility(View.GONE);
-        loadThumbs();
+        LinearLayout thumbs = findViewById(R.id.thumbs);
+        thumbs.setVisibility(View.GONE);
+        // loadThumbs();
     }
 
     @Override
