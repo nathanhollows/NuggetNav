@@ -9,10 +9,10 @@ An app for finding and reviewing ready to eat chicken nuggets.
 
 ## Requirements
 
-Android Studio 3.5.x
-Gradle 3.5.x
-Android 15 SDK
-An android device running Android 4.0.3 or higher
+- Android Studio 3.5.x
+- Gradle 3.5.x
+- Android 15 SDK
+- An android device running Android 4.0.3 or higher
 
 ## License
 
