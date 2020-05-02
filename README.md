@@ -13,6 +13,11 @@ An app for finding and reviewing ready to eat chicken nuggets.
 - Gradle 3.5.x
 - Android 15 SDK
 - An android device running Android 4.0.3 or higher
+- A mapbox account and API key
+
+## Building
+
+- In `strings.xml` enter your API key against `mapbox_access_token`
 
 ## License
 
