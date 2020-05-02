@@ -1,5 +1,8 @@
 package com.nuggetwatch.nuggetnav;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -15,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,7 +36,9 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
     private RatingBar coatingBar;
     private RatingBar saucesBar;
     private RatingBar overallBar;
+    private EditText comments;
     private String nicename;
+    private static int result = -1;
     public static final String MY_PREFS_NAME = "Prefs";
 
     @Override
@@ -64,19 +71,43 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
         saucesBar.setOnRatingBarChangeListener(this);
         overallBar.setOnRatingBarChangeListener(this);
 
+        comments = findViewById(R.id.commentsInput);
+
         Button submit = findViewById(R.id.submitButton);
+        submit.setBackgroundColor(getResources().getColor(R.color.gray));
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postReview();
+                Toast.makeText(ReviewActivity.this, "Please rate everything", Toast.LENGTH_SHORT).show();
             }
         });
+
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+
+        if (prefs.contains(nicename + "-flavourBar")) {
+            flavourBar.setRating(prefs.getInt(nicename + "-flavourBar", 0));
+        }
+        if (prefs.contains(nicename + "-mouthfeelBar")) {
+            mouthfeelBar.setRating(prefs.getInt(nicename + "-mouthfeelBar", 0));
+        }
+        if (prefs.contains(nicename + "-coatingBar")) {
+            coatingBar.setRating(prefs.getInt(nicename + "-coatingBar", 0));
+        }
+        if (prefs.contains(nicename + "-saucesBar")) {
+            saucesBar.setRating(prefs.getInt(nicename + "-saucesBar", 0));
+        }
+        if (prefs.contains(nicename + "-overallBar")) {
+            overallBar.setRating(prefs.getInt(nicename + "-overallBar", 0));
+        }
+        if (prefs.contains(nicename + "-comments")) {
+            comments.setText(prefs.getString(nicename + "-comments", ""));
+        }
+
     }
 
     public void postReview() {
         OkHttpClient client = new OkHttpClient();
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        EditText comments = findViewById(R.id.commentsInput);
 
         RequestBody formBody = new FormBody.Builder()
                 .add("name", prefs.getString("name", ""))
@@ -95,20 +126,36 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
                 .post(formBody)
                 .build();
 
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+
         Call call = client.newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.d("CALL::", "" + e.getMessage());
+                result = 0;
+                countDownLatch.countDown();
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                assert response.body() != null;
-                Log.d("CALL::", response.body().string());
-                Log.d("CALL::", response.message());
+                if (response.body() != null) {
+                    result = 1;
+                } else {
+                    result = 0;
+                }
+                countDownLatch.countDown();
             }
         });
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        setReturnValue();
+        this.finish();
+
 
     }
 
@@ -124,5 +171,68 @@ public class ReviewActivity extends AppCompatActivity implements RatingBar.OnRat
         if (rating < 1f) {
             ratingBar.setRating(1f);
         }
+
+        // If all ratings (except sauces) have been chosen then enable form submit
+        if (flavourBar.getRating() >= 1 &&
+                mouthfeelBar.getRating() >= 1 &&
+                coatingBar.getRating() >= 1 &&
+                overallBar.getRating() >= 1) {
+            activateSubmit();
+        }
+
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().putInt(nicename + "-" + getResources().getResourceEntryName(ratingBar.getId()),
+                (int) ratingBar.getRating()).apply();
+
+    }
+
+    private void activateSubmit() {
+        Button submit = findViewById(R.id.submitButton);
+
+        submit.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                postReview();
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveComments();
+    }
+
+    @Override
+    public void onDestroy() {
+        int response;
+        super.onDestroy();
+        saveComments();
+
+    }
+
+    private void saveComments() {
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        prefs.edit().putString(nicename + "-comments",
+                comments.getText().toString()).apply();
+    }
+
+    private void setReturnValue() {
+        int response = 1;
+        switch (result) {
+            // Review was not able to be sent (error)
+            case 0:
+                break;
+            // Review was sent (no error)
+            case 1: response = ReviewActivity.RESULT_OK;
+                break;
+            // Review has now been sent (no error)
+            default: response = ReviewActivity.RESULT_CANCELED;
+        }
+
+        Intent returnIntent = new Intent();
+        setResult(response, returnIntent);
+        finish();
     }
 }
