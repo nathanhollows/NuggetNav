@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -59,6 +61,7 @@
                 android:layout_marginBottom="16sp"
                 android:text="Filler text"
                 android:textColor="@color/textColor"
+                android:textIsSelectable="true"
                 android:textSize="14sp"
                 app:lineHeight="21sp" />
 
@@ -83,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <RatingBar
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/flavourBar"
                         style="@style/Widget.AppCompat.RatingBar.Indicator"
                         android:layout_width="wrap_content"
@@ -94,7 +97,8 @@
                         android:rating="4"
                         android:scaleX="1"
                         android:scaleY="1"
-                        android:stepSize="1" />
+                        android:stepSize="1"
+                        app:mrb_progressTint="@color/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -119,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <RatingBar
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/mouthfeelBar"
                         style="@style/Widget.AppCompat.RatingBar.Indicator"
                         android:layout_width="wrap_content"
@@ -130,7 +134,8 @@
                         android:rating="4"
                         android:scaleX="1"
                         android:scaleY="1"
-                        android:stepSize="1" />
+                        android:stepSize="1"
+                        app:mrb_progressTint="@color/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -155,7 +160,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <RatingBar
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/coatingBar"
                         style="@style/Widget.AppCompat.RatingBar.Indicator"
                         android:layout_width="wrap_content"
@@ -166,7 +171,8 @@
                         android:rating="4"
                         android:scaleX="1"
                         android:scaleY="1"
-                        android:stepSize="1" />
+                        android:stepSize="1"
+                        app:mrb_progressTint="@color/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -193,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <RatingBar
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/saucesBar"
                         style="@style/Widget.AppCompat.RatingBar.Indicator"
                         android:layout_width="wrap_content"
@@ -204,7 +210,8 @@
                         android:rating="4"
                         android:scaleX="1"
                         android:scaleY="1"
-                        android:stepSize="1" />
+                        android:stepSize="1"
+                        app:mrb_progressTint="@color/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -228,7 +235,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="end">
 
-                    <RatingBar
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
                         android:id="@+id/overallBar"
                         style="@style/Widget.AppCompat.RatingBar.Indicator"
                         android:layout_width="wrap_content"
@@ -239,7 +246,8 @@
                         android:rating="4"
                         android:scaleX="1"
                         android:scaleY="1"
-                        android:stepSize="1" />
+                        android:stepSize="1"
+                        app:mrb_progressTint="@color/colorAccent" />
                 </RelativeLayout>
             </LinearLayout>
 
@@ -254,19 +262,24 @@
 
                 <ImageView
                     android:id="@+id/thumbUp"
+                    android:contentDescription="Thumb pointing up"
                     android:layout_width="32sp"
                     android:layout_height="32sp"
                     android:layout_marginRight="3sp"
+                    android:layout_marginEnd="3sp"
                     android:clickable="true"
+                    android:focusable="true"
                     android:tint="@android:color/darker_gray"
                     app:srcCompat="@drawable/ic_thumb_up_white_24dp" />
 
                 <ImageView
                     android:id="@+id/thumbDown"
+                    android:contentDescription="Thumb pointing down"
                     android:layout_width="32sp"
                     android:layout_height="32sp"
                     android:layout_marginTop="3sp"
                     android:clickable="true"
+                    android:focusable="true"
                     android:tint="@android:color/darker_gray"
                     app:srcCompat="@drawable/ic_thumb_down_white_24dp" />
 
@@ -276,6 +289,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="8sp"
+                    android:layout_marginStart="8sp"
                     android:gravity="center_vertical"
                     android:text="Was this review Sweet or Sour?"
                     android:textColor="@color/colorPrimary" />

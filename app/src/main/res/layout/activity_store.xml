@@ -53,7 +53,6 @@
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="100sp"
-                    android:autoText="true"
                     android:gravity="center"
                     android:padding="16sp"
                     android:text="@string/reviews"
@@ -65,13 +64,77 @@
                     app:fontFamily="@font/oswald_regular" />
 
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center_horizontal">
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView17"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/overall"
+                        android:textColor="@color/white"
+                        app:fontFamily="@font/oswald_medium" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clickable="true"
+                        android:gravity="center_horizontal">
+
+                        <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                            android:id="@+id/rating_overall"
+                            style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="48sp"
+                            android:layout_marginBottom="16sp"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:stepSize="1"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:mrb_fillBackgroundStars="true"
+                            app:mrb_progressBackgroundTint="#657585"
+                            app:mrb_progressTint="@color/colorAccent" />
+
+                        <ImageView
+                            android:id="@+id/rating_caret"
+                            android:layout_width="32sp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBottom="@+id/rating_overall"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="16dp"
+                            android:layout_toEndOf="@+id/rating_overall"
+                            android:layout_toRightOf="@+id/rating_overall"
+                            android:scaleX="1"
+                            android:scaleY="1"
+                            android:tint="@color/white"
+                            app:srcCompat="@drawable/ic_keyboard_arrow_down_black_24dp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rating_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/flavour"
+                        android:textColor="@color/white"
+                        app:fontFamily="@font/oswald_medium" />
 
                     <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                        android:id="@+id/rating_overall"
+                        android:id="@+id/rating_flavour"
                         style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -84,7 +147,75 @@
                         app:mrb_fillBackgroundStars="true"
                         app:mrb_progressBackgroundTint="#657585"
                         app:mrb_progressTint="@color/colorAccent" />
-                </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/coating"
+                        android:textColor="@color/white"
+                        app:fontFamily="@font/oswald_medium" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_coating"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/mouthfeel"
+                        android:textColor="@color/white"
+                        app:fontFamily="@font/oswald_medium" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_mouthfeel"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                    <TextView
+                        android:id="@+id/textSauces"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sauces"
+                        android:textColor="@color/white"
+                        app:fontFamily="@font/oswald_medium" />
+
+                    <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                        android:id="@+id/rating_sauces"
+                        style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16sp"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:mrb_fillBackgroundStars="true"
+                        app:mrb_progressBackgroundTint="#657585"
+                        app:mrb_progressTint="@color/colorAccent" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
