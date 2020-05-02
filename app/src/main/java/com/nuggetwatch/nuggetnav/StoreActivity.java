@@ -1,5 +1,6 @@
 package com.nuggetwatch.nuggetnav;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -28,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import okhttp3.Cache;
@@ -49,7 +52,6 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
     private static final String MY_PREFS_NAME = "Prefs";
     private SharedPreferences prefs;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +62,13 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
 
         try {
             json = new JSONObject(getIntent().getStringExtra("json"));
-             this.name = json.getJSONObject("properties").getString("chain");
-            name.setText(this.name);
-            getSupportActionBar().setTitle(json.getJSONObject("properties").getString("chain"));
-            RatingBar overall = findViewById(R.id.rating_overall);
-            overall.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+            this.name = json.getJSONObject("properties").getString("chain");
+            setupRatings();
         } catch (Throwable t) {
             Log.e("JSON:: ", "Could not parse malformed JSON: " + getIntent().getStringExtra("json"));
         }
+
+        name.setText(this.name);
 
         prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
 
@@ -79,18 +80,47 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
             }
         });
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("");
+        }
+
         reviewsLayout = findViewById(R.id.reviewsLayout);
         pricesLayout = findViewById(R.id.pricesLayout);
         reviewsLayout.setVisibility(View.GONE);
         pricesLayout.setVisibility(View.GONE);
 
         getPrices();
-        getReviews();
+        getReviews(true);
+    }
+
+    private void setupRatings() throws JSONException {
+        RatingBar overall = findViewById(R.id.rating_overall);
+        RatingBar flavour = findViewById(R.id.rating_flavour);
+        RatingBar coating = findViewById(R.id.rating_coating);
+        RatingBar mouthfeel = findViewById(R.id.rating_mouthfeel);
+        RatingBar sauces = findViewById(R.id.rating_sauces);
+
+        LinearLayout ratingContainer = findViewById(R.id.rating_container);
+
+        overall.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+        flavour.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+        coating.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+        mouthfeel.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+        sauces.setRating(Integer.valueOf(json.getJSONObject("properties").getString("rating")));
+
+    }
+
+    @Override
+    public ComponentName startForegroundService(Intent service) {
+        return super.startForegroundService(service);
     }
 
     private void writeReviewHandover() {
         Intent intent;
-
         if (prefs.contains("name")){
             intent = new Intent(StoreActivity.this, ReviewActivity.class);
         } else {
@@ -99,7 +129,26 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         intent.putExtra("name", name);
         intent.putExtra("nicename", getIntent().getStringExtra("nicename"));
-        startActivity(intent);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d("CODE::", "result: " + String.valueOf(resultCode) + "request: " + String.valueOf(requestCode));
+        switch (resultCode) {
+            case ReviewActivity.RESULT_OK:
+                Toast.makeText(getApplicationContext(), "Your review was submitted!", Toast.LENGTH_SHORT).show();
+                getReviews(false);
+                break;
+            case ReviewActivity.RESULT_CANCELED:
+                Toast.makeText(getApplicationContext(), "Your review has been saved for later", Toast.LENGTH_SHORT).show();
+                break;
+            case ReviewActivity.RESULT_FIRST_USER:
+                Toast.makeText(getApplicationContext(), "Something went wrong :(", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     @Override
@@ -182,47 +231,58 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
 
         final TextView priceMessage = findViewById(R.id.priceMessage);
 
-        apiCall.enqueue(new Callback<List<PriceModel>>() {
-            @Override
-            public void onResponse(Call<List<PriceModel>> call, Response<List<PriceModel>> response) {
-                // set up the RecyclerView
-                RecyclerView recyclerView = findViewById(R.id.priceRecycler);
-                LinearLayoutManager layoutManager = new LinearLayoutManager(StoreActivity.this);
-                recyclerView.setLayoutManager(layoutManager);
-                priceAdapter = new PriceAdapter(StoreActivity.this, response.body());
-                recyclerView.setLayoutFrozen(true);
-                recyclerView.setAdapter(priceAdapter);
+        if (apiCall != null) {
+            apiCall.enqueue(new Callback<List<PriceModel>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<PriceModel>> call, @NonNull Response<List<PriceModel>> response) {
+                    // set up the RecyclerView
+                    RecyclerView recyclerView = findViewById(R.id.priceRecycler);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(StoreActivity.this);
+                    recyclerView.setLayoutManager(layoutManager);
+                    priceAdapter = new PriceAdapter(StoreActivity.this, response.body());
+                    recyclerView.setLayoutFrozen(true);
+                    recyclerView.setAdapter(priceAdapter);
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                        layoutManager.getOrientation());
-                recyclerView.addItemDecoration(dividerItemDecoration);
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                            layoutManager.getOrientation());
+                    recyclerView.addItemDecoration(dividerItemDecoration);
 
-                if (response.body().size() > 0) {
-                    pricesLayout.setVisibility(View.VISIBLE);
-                    priceMessage.setText(R.string.badPrices);
-                } else {
-                    pricesLayout.setVisibility(View.VISIBLE);
-                    priceMessage.setText(R.string.missingPrices);
+                    if (response.body() != null) {
+                        if (response.body().size() > 0) {
+                            pricesLayout.setVisibility(View.VISIBLE);
+                            priceMessage.setText(R.string.badPrices);
+                        } else {
+                            pricesLayout.setVisibility(View.VISIBLE);
+                            priceMessage.setText(R.string.missingPrices);
 
-                    TableRow priceTableHeader = findViewById(R.id.tableRow);
-                    priceTableHeader.setVisibility(View.GONE);
-                    View divider = findViewById(R.id.divider);
-                    divider.setVisibility(View.GONE);
+                            TableRow priceTableHeader = findViewById(R.id.tableRow);
+                            priceTableHeader.setVisibility(View.GONE);
+                            View divider = findViewById(R.id.divider);
+                            divider.setVisibility(View.GONE);
+                        }
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<PriceModel>> call, Throwable t) {
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<List<PriceModel>> call, @NonNull Throwable t) {
+                }
+            });
+        }
     }
 
-    public void getReviews() {
+    public void getReviews(boolean useCache) {
 
         int cacheSize = 10 * 1024 * 1024; // 10MB
 
         File httpCacheDirectory = new File(this.getCacheDir(), "http-cache");
         Cache cache = new Cache(httpCacheDirectory, cacheSize);
+        if (!useCache) {
+            try {
+                cache.evictAll();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         OkHttpClient builder = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new CacheInterceptor())
                 .cache(cache)
@@ -248,34 +308,35 @@ public class StoreActivity extends AppCompatActivity implements ReviewAdapter.Re
             e.printStackTrace();
         }
 
-        apiCall.enqueue(new Callback<List<ReviewModel>>() {
-            @Override
-            public void onResponse(Call<List<ReviewModel>> call, Response<List<ReviewModel>> response) {
-                Log.d("JSON:: ", response.body().toString());
-                // set up the RecyclerView
-                RecyclerView recyclerView = findViewById(R.id.reviewRecycler);
-                LinearLayoutManager layoutManager = new LinearLayoutManager(StoreActivity.this);
-                recyclerView.setLayoutManager(layoutManager);
-                reviewAdapter = new ReviewAdapter(StoreActivity.this, response.body());
-                reviewAdapter.setClickListener(StoreActivity.this);
-                recyclerView.setAdapter(reviewAdapter);
+        if (apiCall != null) {
+            apiCall.enqueue(new Callback<List<ReviewModel>>() {
+                @Override
+                public void onResponse(@NonNull Call<List<ReviewModel>> call, @NonNull Response<List<ReviewModel>> response) {
+                    // set up the RecyclerView
+                    RecyclerView recyclerView = findViewById(R.id.reviewRecycler);
+                    LinearLayoutManager layoutManager = new LinearLayoutManager(StoreActivity.this);
+                    recyclerView.setLayoutManager(layoutManager);
+                    reviewAdapter = new ReviewAdapter(StoreActivity.this, response.body());
+                    reviewAdapter.setClickListener(StoreActivity.this);
+                    recyclerView.setAdapter(reviewAdapter);
 
-                DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                        layoutManager.getOrientation());
-                recyclerView.addItemDecoration(dividerItemDecoration);
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                            layoutManager.getOrientation());
+                    recyclerView.addItemDecoration(dividerItemDecoration);
 
-                progressBar.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
 
-                if (response.body().size() > 0) {
-                    reviewsLayout.setVisibility(View.VISIBLE);
+                    if (response.body() != null && response.body().size() > 0) {
+                        reviewsLayout.setVisibility(View.VISIBLE);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<List<ReviewModel>> call, Throwable t) {
-                Log.d("JSON:: ", t.toString());
-                // Todo: Let the user know it failed
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<List<ReviewModel>> call, @NonNull Throwable t) {
+                    Log.d("JSON:: ", t.toString());
+                    // Todo: Let the user know it failed
+                }
+            });
+        }
     }
 }
