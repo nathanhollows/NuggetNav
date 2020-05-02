@@ -67,11 +67,13 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static com.mapbox.mapboxsdk.style.expressions.Expression.all;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.get;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.gte;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.has;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.literal;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.lt;
+import static com.mapbox.mapboxsdk.style.expressions.Expression.switchCase;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.toNumber;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius;
@@ -185,14 +187,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }, 5000);
 
-        FloatingActionButton fuck = findViewById(R.id.nearestButton);
-        fuck.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(findViewById(R.id.container), "Can you not?", Snackbar.LENGTH_LONG).show();
-            }
-        });
-
     }
 
 
@@ -266,6 +260,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void centerOnUser() {
+        checkLocationPermission();
         if (mapboxMap.getLocationComponent().isLocationComponentActivated()
                 && mapboxMap.getLocationComponent().isLocationComponentEnabled()
                 && mapboxMap.getLocationComponent().getLastKnownLocation() != null) {
@@ -425,7 +420,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SymbolLayer unclustered = new SymbolLayer("unclustered-points", "locations");
 
         unclustered.setProperties(
-                iconImage("marker"),
+                iconImage( "marker" ),
                 iconAllowOverlap(true),
                 iconSize(0.9f)
         );
